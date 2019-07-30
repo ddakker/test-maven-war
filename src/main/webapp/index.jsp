@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>test-maven-war</title>
+    <title>test-s2i-maven-web-source</title>
 </head>
 <body>
 
