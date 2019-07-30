@@ -1,5 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- dk custom test -->
+<!--
+    eap72-openshift:latest(1.0)
+    dk custom test
+-->
 <server xmlns="urn:jboss:domain:8.0">
     <extensions>
         <extension module="org.jboss.as.clustering.infinispan"/>
@@ -52,7 +55,7 @@
                 </authorization>
             </security-realm>
             <security-realm name="ApplicationRealm">
-                <!-- No SSL configuration discovered -->
+                <!-- ##SSL## -->
                 <authentication>
                     <local default-user="$local" allowed-users="*" skip-group-loading="true"/>
                     <properties path="application-users.properties" relative-to="jboss.server.config.dir"/>
@@ -95,7 +98,7 @@
         <subsystem xmlns="urn:jboss:domain:logging:6.0">
             <console-handler name="CONSOLE">
                 <formatter>
-                    <named-formatter name="COLOR-PATTERN"/>
+                    <named-formatter name="##CONSOLE-FORMATTER##"/>
                 </formatter>
             </console-handler>
             <logger category="com.arjuna">
@@ -127,7 +130,7 @@
             </formatter>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:batch-jberet:2.0">
-            <default-job-repository name="in-memory"/>
+            <!-- ##DEFAULT_JOB_REPOSITORY## -->
             <default-thread-pool name="batch"/>
             <job-repository name="in-memory">
                 <in-memory/>
@@ -141,7 +144,7 @@
         <subsystem xmlns="urn:jboss:domain:bean-validation:1.0"/>
         <subsystem xmlns="urn:jboss:domain:datasources:5.0">
             <datasources>
-                <datasource jta="true" jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}"> <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url> <driver>h2</driver> <security> <user-name>sa</user-name> <password>sa</password> </security> </datasource><!-- ##DATASOURCES## -->
+                <!-- ##DATASOURCES## -->
                 <drivers>
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
@@ -157,7 +160,7 @@
             </datasources>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:deployment-scanner:2.0">
-            <deployment-scanner path="deployments" relative-to="jboss.server.base.dir" scan-interval="5000" runtime-failure-causes-rollback="${jboss.deployment.scanner.rollback.on.failure:false}" auto-deploy-exploded="false"/>
+            <deployment-scanner path="deployments" relative-to="jboss.server.base.dir" scan-interval="5000" runtime-failure-causes-rollback="${jboss.deployment.scanner.rollback.on.failure:false}" auto-deploy-exploded="##AUTO_DEPLOY_EXPLODED##"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:discovery:1.0"/>
         <subsystem xmlns="urn:jboss:domain:ee:4.0">
@@ -177,8 +180,8 @@
                 </managed-scheduled-executor-services>
             </concurrent>
             <default-bindings context-service="java:jboss/ee/concurrency/context/default"
-                              datasource="java:jboss/datasources/ExampleDS"
-                              jms-connection-factory="java:jboss/DefaultJMSConnectionFactory"
+                              datasource="##DEFAULT_DATASOURCE##"
+                              jms-connection-factory="##DEFAULT_JMS##"
                               managed-executor-service="java:jboss/ee/concurrency/executor/default"
                               managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default"
                               managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
@@ -210,7 +213,7 @@
                 <passivation-store name="infinispan" cache-container="ejb" max-size="10000"/>
             </passivation-stores>
             <async thread-pool-name="default"/>
-            <timer-service thread-pool-name="default" default-data-store="default-file-store">                <data-stores>                    <file-data-store name="default-file-store" path="timer-service-data" relative-to="jboss.server.data.dir"/>                    <!-- ##DATASTORES## -->                </data-stores>            </timer-service>
+            <!-- ##TIMER_SERVICE## -->
             <remote connector-ref="http-remoting-connector" thread-pool-name="default">
                 <channel-creation-options>
                     <option name="READ_TIMEOUT" value="${prop.remoting-connector.read.timeout:20}" type="xnio"/>
@@ -226,7 +229,7 @@
             <default-security-domain value="other"/>
             <default-missing-method-permissions-deny-access value="true"/>
             <log-system-exceptions value="true"/>
-
+            <!-- ##EJB_APPLICATION_SECURITY_DOMAINS## -->
         </subsystem>
         <subsystem xmlns="urn:wildfly:elytron:4.0" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
             <providers>
@@ -241,7 +244,7 @@
                 <file-audit-log name="local-audit" path="audit.log" relative-to="jboss.server.log.dir" format="JSON"/>
             </audit-logging>
             <security-domains>
-
+                <!-- ##ELYTRON_SECURITY_DOMAIN## -->
                 <security-domain name="ApplicationDomain" default-realm="ApplicationRealm" permission-mapper="default-permission-mapper">
                     <realm name="ApplicationRealm" role-decoder="groups-to-roles"/>
                     <realm name="local"/>
@@ -290,7 +293,7 @@
                 </permission-set>
             </permission-sets>
             <http>
-
+                <!-- ##HTTP_AUTHENTICATION_FACTORY## -->
                 <http-authentication-factory name="application-http-authentication" http-server-mechanism-factory="global" security-domain="ApplicationDomain">
                     <mechanism-configuration>
                         <mechanism mechanism-name="BASIC">
@@ -337,19 +340,8 @@
                 </mechanism-provider-filtering-sasl-server-factory>
                 <provider-sasl-server-factory name="global"/>
             </sasl>
-
-            <tls>
-                <key-stores>
-                    <!-- ##ELYTRON_KEY_STORE## -->
-                </key-stores>
-                <key-managers>
-                    <!-- ##ELYTRON_KEY_MANAGER## -->
-                </key-managers>
-                <server-ssl-contexts>
-                    <!-- ##ELYTRON_SERVER_SSL_CONTEXT## -->
-                </server-ssl-contexts>
-            </tls>
-
+            <!-- ##TLS## -->
+            <!-- ##ELYTRON_TLS## -->
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:infinispan:7.0">
             <cache-container name="server" aliases="singleton cluster" default-cache="default" module="org.wildfly.clustering.server">
@@ -431,16 +423,16 @@
             <stacks>
                 <stack name="udp">
                     <transport type="UDP" socket-binding="jgroups-udp"/>
-                    <protocol type="openshift.KUBE_PING" />
+                    <!-- ##JGROUPS_PING_PROTOCOL## -->
                     <protocol type="MERGE3"/>
                     <protocol type="FD_SOCK"/>
                     <protocol type="FD_ALL"/>
                     <protocol type="VERIFY_SUSPECT"/>
-
+                    <!-- ##JGROUPS_ENCRYPT## -->
                     <protocol type="pbcast.NAKACK2"/>
                     <protocol type="UNICAST3"/>
                     <protocol type="pbcast.STABLE"/>
-                    <!--WARNING: No password defined for JGroups cluster. AUTH protocol has been disabled. Please define JGROUPS_CLUSTER_PASSWORD. -->
+                    <!-- ##JGROUPS_AUTH## -->
                     <protocol type="pbcast.GMS">
                         <property name="join_timeout">${env.JGROUPS_JOIN_TIMEOUT:10000}</property>
                     </protocol>
@@ -453,16 +445,16 @@
                         <property name="use_ip_addrs">false</property>
                         <property name="sock_conn_timeout">300</property>
                     </transport>
-                    <protocol type="openshift.KUBE_PING" />
+                    <!-- ##JGROUPS_PING_PROTOCOL## -->
                     <protocol type="MERGE3"/>
                     <protocol type="FD_SOCK"/>
                     <protocol type="FD_ALL"/>
                     <protocol type="VERIFY_SUSPECT"/>
-
+                    <!-- ##JGROUPS_ENCRYPT## -->
                     <protocol type="pbcast.NAKACK2"/>
                     <protocol type="UNICAST3"/>
                     <protocol type="pbcast.STABLE"/>
-                    <!--WARNING: No password defined for JGroups cluster. AUTH protocol has been disabled. Please define JGROUPS_CLUSTER_PASSWORD. -->
+                    <!-- ##JGROUPS_AUTH## -->
                     <protocol type="pbcast.GMS">
                         <property name="join_timeout">${env.JGROUPS_JOIN_TIMEOUT:10000}</property>
                     </protocol>
@@ -488,37 +480,7 @@
             </mail-session>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:messaging-activemq:4.0">
-            <server name="default">
-                <statistics enabled="${wildfly.messaging-activemq.statistics-enabled:${wildfly.statistics-enabled:false}}" />
-                <journal pool-files="10"/>
-                <security-setting name="#">
-                    <role name="guest" send="true" consume="true" create-non-durable-queue="true" delete-non-durable-queue="true"/>
-                </security-setting>
-                <address-setting name="#" dead-letter-address="jms.queue.DLQ" expiry-address="jms.queue.ExpiryQueue" max-size-bytes="10485760" page-size-bytes="2097152" message-counter-history-day-limit="10" redistribution-delay="1000"/>
-                <http-connector name="http-connector" socket-binding="http-messaging" endpoint="http-acceptor"/>
-                <http-connector name="http-connector-throughput" socket-binding="http-messaging" endpoint="http-acceptor-throughput">
-                    <param name="batch-delay" value="50"/>
-                </http-connector>
-                <!-- ##AMQ_REMOTE_CONNECTOR## -->
-                <in-vm-connector name="in-vm" server-id="0">
-                    <param name="buffer-pooling" value="false"/>
-                </in-vm-connector>
-                <http-acceptor name="http-acceptor" http-listener="default"/>
-                <http-acceptor name="http-acceptor-throughput" http-listener="default">
-                    <param name="batch-delay" value="50"/>
-                    <param name="direct-deliver" value="false"/>
-                </http-acceptor>
-                <in-vm-acceptor name="in-vm" server-id="0">
-                    <param name="buffer-pooling" value="false"/>
-                </in-vm-acceptor>
-                <jms-queue name="ExpiryQueue" entries="java:/jms/queue/ExpiryQueue"/>
-                <jms-queue name="DLQ" entries="java:/jms/queue/DLQ"/>
-
-                <connection-factory name="InVmConnectionFactory" connectors="in-vm" entries="java:/ConnectionFactory"/>
-                <connection-factory name="RemoteConnectionFactory" connectors="http-connector" entries="java:jboss/exported/jms/RemoteConnectionFactory" reconnect-attempts="-1" />
-                <pooled-connection-factory name="activemq-ra" transaction="xa" connectors="in-vm" entries="java:/JmsXA java:jboss/DefaultJMSConnectionFactory"/>
-                <!-- ##AMQ_POOLED_CONNECTION_FACTORY## -->
-            </server>
+            <!-- ##MESSAGING_SUBSYSTEM_CONFIG## -->
         </subsystem>
         <subsystem xmlns="urn:wildfly:microprofile-config-smallrye:1.0">
             <!-- ##MICROPROFILE_CONFIG_SOURCE## -->
@@ -549,7 +511,7 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:sar:1.0"/>
         <subsystem xmlns="urn:jboss:domain:security:2.0">
-
+            <!-- ##ELYTRON_INTEGRATION## -->
             <security-domains>
                 <security-domain name="other" cache-type="default">
                     <authentication>
@@ -573,7 +535,7 @@
                     </authorization>
                 </security-domain>
                 <!-- ##KEYCLOAK_SECURITY_DOMAIN## -->
-                <!-- no additional security domains configured --><!-- ##ADDITIONAL_SECURITY_DOMAINS## -->
+                <!-- ##ADDITIONAL_SECURITY_DOMAINS## -->
             </security-domains>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:security-manager:1.0">
@@ -605,7 +567,7 @@
             <server name="default-server">
                 <ajp-listener name="ajp" socket-binding="ajp"/>
                 <http-listener name="default" socket-binding="http" redirect-socket="https" enable-http2="true" proxy-address-forwarding="true"/>
-                <!-- No HTTPS configuration discovered -->
+                <!-- ##HTTPS_CONNECTOR## -->
                 <host name="default-host" alias="localhost">
                     <location name="/" handler="welcome-content"/>
                     <!-- ##ACCESS_LOG_VALVE## -->
@@ -620,7 +582,7 @@
             <handlers>
                 <file name="welcome-content" path="${jboss.home.dir}/welcome-content"/>
             </handlers>
-
+            <!-- ##HTTP_APPLICATION_SECURITY_DOMAINS## -->
             <!-- ##HTTP_FILTERS_MARKER## -->
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:webservices:2.0">
@@ -663,7 +625,7 @@
         <outbound-socket-binding name="http-messaging">
             <remote-destination host="${jboss.messaging.host:localhost}" port="${jboss.http.port:8080}"/>
         </outbound-socket-binding>
-        <socket-binding name="messaging" port="5445"/><socket-binding name="messaging-throughput" port="5455"/>
+        <!-- ##MESSAGING_PORTS## -->
         <!-- ##AMQ_MESSAGING_SOCKET_BINDING## -->
         <socket-binding name="txn-recovery-environment" port="4712"/>
         <socket-binding name="txn-status-manager" port="4713"/>
