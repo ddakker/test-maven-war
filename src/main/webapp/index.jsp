@@ -24,6 +24,7 @@
     out.println("<br>getRemoteHost():" + request.getRemoteHost());
     out.println("<br>getLocalAddr():" + request.getLocalAddr());
     out.println("<br>getServerName():" + request.getServerName());
+    out.println("<br>isSecure():" + request.isSecure());
 
 
 
