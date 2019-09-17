@@ -26,6 +26,7 @@
     out.println("<br>getServerName():" + request.getServerName());
     out.println("<br>getServerPort():" + request.getServerPort());
     out.println("<br>isSecure():" + request.isSecure());
+    out.println("<br>getScheme():" + request.getScheme());
 
 
 
